@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/
+data/processed/
+data/features/
+models/
+reports/
+mlruns/
+mlflow.db
+.dvc/cache/
+*.zip

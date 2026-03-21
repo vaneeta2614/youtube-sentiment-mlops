@@ -1,0 +1,197 @@
+schema: '2.0'
+stages:
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw/reddit_comments.csv
+      hash: md5
+      md5: 38ee083169162dbac0cb07c80ac0f04e
+      size: 6888934
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: dae952777a7683e72e4ae24ed2e06942
+      size: 3946
+    params:
+      params.yaml:
+        data.processed_path: data/processed/comments_clean.csv
+        data.random_state: 42
+        data.raw_path: data/raw/reddit_comments.csv
+        data.test_size: 0.2
+        preprocessing:
+          min_comment_length: 3
+          remove_urls: true
+          remove_emojis: false
+    outs:
+    - path: data/processed/comments_clean.csv
+      hash: md5
+      md5: 8e3ecfa90226c4702e6110ab19a78fee
+      size: 6795542
+    - path: data/processed/test.csv
+      hash: md5
+      md5: e8eaf5ffb9d85d51a5a9d040b8dd5f1b
+      size: 1435326
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 9779a722f381f8656164bf585c6f9cf5
+      size: 5360231
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: e8eaf5ffb9d85d51a5a9d040b8dd5f1b
+      size: 1435326
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 9779a722f381f8656164bf585c6f9cf5
+      size: 5360231
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: 8ac809586f0532f62b05f76bc76832e0
+      size: 4445
+    params:
+      params.yaml:
+        feature_engineering:
+          method: tfidf
+          max_features: 50000
+          ngram_range:
+          - 1
+          - 2
+          sublinear_tf: true
+        imbalance:
+          strategy: class_weight
+    outs:
+    - path: data/features/X_test.pkl
+      hash: md5
+      md5: 87abc4e8bb8ad2f7b7ebd691acb6b106
+      size: 2908490
+    - path: data/features/X_train.pkl
+      hash: md5
+      md5: 87c11f878e76c48a9aeafecbcf0b2231
+      size: 11673732
+    - path: data/features/y_test.pkl
+      hash: md5
+      md5: 520255070899239f325a9962da230a38
+      size: 55344
+    - path: data/features/y_train.pkl
+      hash: md5
+      md5: 2d0dcc037311e4b1f014b9cab9252f3d
+      size: 220905
+    - path: models/vectorizer.pkl
+      hash: md5
+      md5: f2e448805c31fc283a9740e09248dbcc
+      size: 1976835
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: data/features/X_train.pkl
+      hash: md5
+      md5: 87c11f878e76c48a9aeafecbcf0b2231
+      size: 11673732
+    - path: data/features/y_train.pkl
+      hash: md5
+      md5: 2d0dcc037311e4b1f014b9cab9252f3d
+      size: 220905
+    - path: src/model_training.py
+      hash: md5
+      md5: ef0335b4e3ecf73599c1a516388114ef
+      size: 6723
+    params:
+      params.yaml:
+        imbalance:
+          strategy: class_weight
+        mlflow:
+          tracking_uri: http://localhost:5001
+          experiment_name: yt_sentiment_v1
+          registered_model_name: yt_sentiment_model
+        model:
+          algorithm: lightgbm
+          n_estimators: 367
+          learning_rate: 0.08
+          max_depth: 20
+          num_leaves: 63
+          min_child_samples: 20
+          subsample: 0.8
+          colsample_bytree: 0.8
+          reg_alpha: 0.1
+          reg_lambda: 0.1
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: ebca047f88dae5532ab12ec5420081e5
+      size: 6984283
+    - path: reports/train_metrics.json
+      hash: md5
+      md5: add037b2c0657098ae7758d934788e87
+      size: 54
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: data/features/X_test.pkl
+      hash: md5
+      md5: 87abc4e8bb8ad2f7b7ebd691acb6b106
+      size: 2908490
+    - path: data/features/y_test.pkl
+      hash: md5
+      md5: 520255070899239f325a9962da230a38
+      size: 55344
+    - path: models/model.pkl
+      hash: md5
+      md5: ebca047f88dae5532ab12ec5420081e5
+      size: 6984283
+    - path: models/vectorizer.pkl
+      hash: md5
+      md5: f2e448805c31fc283a9740e09248dbcc
+      size: 1976835
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 22c469c129f3637ada046f6f9a55ed29
+      size: 5020
+    params:
+      params.yaml:
+        evaluation:
+          accuracy_threshold: 0.82
+          f1_threshold: 0.78
+          recall_neg_threshold: 0.7
+        mlflow:
+          tracking_uri: http://localhost:5001
+          experiment_name: yt_sentiment_v1
+          registered_model_name: yt_sentiment_model
+    outs:
+    - path: reports/confusion_matrix.csv
+      hash: md5
+      md5: 3818689528d00331e6466ad8704b6541
+      size: 86
+    - path: reports/eval_metrics.json
+      hash: md5
+      md5: 81b69debc54e3d37f359a8302342e792
+      size: 230
+  register_model:
+    cmd: python src/register_model.py
+    deps:
+    - path: models/model.pkl
+      hash: md5
+      md5: ebca047f88dae5532ab12ec5420081e5
+      size: 6984283
+    - path: models/vectorizer.pkl
+      hash: md5
+      md5: f2e448805c31fc283a9740e09248dbcc
+      size: 1976835
+    - path: reports/eval_metrics.json
+      hash: md5
+      md5: 81b69debc54e3d37f359a8302342e792
+      size: 230
+    - path: src/register_model.py
+      hash: md5
+      md5: 2d67fe068d83a52f89459d6969642166
+      size: 2203
+    params:
+      params.yaml:
+        evaluation:
+          accuracy_threshold: 0.82
+          f1_threshold: 0.78
+          recall_neg_threshold: 0.7
+        mlflow:
+          tracking_uri: http://localhost:5001
+          experiment_name: yt_sentiment_v1
+          registered_model_name: yt_sentiment_model

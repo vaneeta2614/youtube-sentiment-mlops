@@ -1,0 +1,12 @@
+{
+  "accuracy": 0.9017,
+  "f1_weighted": 0.9009,
+  "precision_weighted": 0.9015,
+  "recall_weighted": 0.9017,
+  "recall_per_class": {
+    "-1": 0.8115,
+    "0": 0.9795,
+    "1": 0.8935
+  },
+  "passed_thresholds": true
+}

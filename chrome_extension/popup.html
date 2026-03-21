@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YT Sentiment Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="chart.min.js"></script>
+  <script src="d3.min.js"></script>
+  <script src="d3.cloud.min.js"></script>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ── Header ────────────────────────────────────── -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-mark">
+          <span class="logo-icon">◈</span>
+        </div>
+        <div>
+          <div class="app-name">SentimentScope</div>
+          <div class="app-sub">YouTube Comment Intelligence</div>
+        </div>
+      </div>
+      <button id="analyzeBtn" class="analyze-btn">
+        <span class="btn-text">Analyze</span>
+        <span class="btn-icon">→</span>
+      </button>
+    </header>
+
+    <!-- ── Error Banner ───────────────────────────────── -->
+    <div id="errorBanner" class="error-banner hidden">
+      <span id="errorMsg"></span>
+    </div>
+
+    <!-- ── Loading State ─────────────────────────────── -->
+    <div id="loadingState" class="loading-state hidden">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Fetching &amp; classifying comments…</div>
+      <div class="loading-sub" id="loadingProgress">Connecting to API</div>
+    </div>
+
+    <!-- ── Results ───────────────────────────────────── -->
+    <div id="results" class="results hidden">
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-label">Total Comments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statUnique">—</div>
+          <div class="stat-label">Unique Authors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statAvgLen">—</div>
+          <div class="stat-label">Avg. Length</div>
+        </div>
+        <div class="stat-card accent">
+          <div class="stat-value" id="statScore">—</div>
+          <div class="stat-label">Sentiment Score /10</div>
+        </div>
+      </div>
+
+      <!-- Charts grid -->
+      <div class="charts-grid">
+
+        <!-- Pie chart -->
+        <div class="chart-card pie-card">
+          <div class="card-title">Sentiment Breakdown</div>
+          <div class="pie-wrap">
+            <canvas id="pieChart"></canvas>
+            <div class="pie-legend" id="pieLegend"></div>
+          </div>
+        </div>
+
+        <!-- Trend chart -->
+        <div class="chart-card trend-card">
+          <div class="card-title">Sentiment Trend</div>
+          <canvas id="trendChart"></canvas>
+        </div>
+
+      </div>
+
+      <!-- Word cloud -->
+      <div class="chart-card wordcloud-card">
+        <div class="card-title">Comment Word Cloud</div>
+        <div id="wordCloud"></div>
+      </div>
+
+      <!-- Top comments table -->
+      <div class="chart-card comments-card">
+        <div class="card-title">Top 25 Comments</div>
+        <div class="comments-table-wrap">
+          <table class="comments-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Comment</th>
+                <th>Sentiment</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="commentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /results -->
+
+    <!-- ── Empty State ───────────────────────────────── -->
+    <div id="emptyState" class="empty-state">
+      <div class="empty-icon">◈</div>
+      <div class="empty-title">Open a YouTube video</div>
+      <div class="empty-desc">Navigate to any YouTube watch page, then click <strong>Analyze</strong> to classify its comments.</div>
+    </div>
+
+  </div><!-- /app -->
+
+  <script src="popup.js"></script>
+</body>
+</html>
