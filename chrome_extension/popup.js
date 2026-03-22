@@ -4,7 +4,7 @@
  */
 
 // ── Config ────────────────────────────────────────────
-const API_BASE = "http://localhost:5000"; // replace with EC2 URL in production
+const API_BASE = "https://sentiment-scope-api.onrender.com";
 
 // ── DOM refs ─────────────────────────────────────────
 const analyzeBtn    = document.getElementById("analyzeBtn");
